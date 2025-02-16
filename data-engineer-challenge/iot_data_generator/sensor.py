@@ -12,7 +12,7 @@ class Sensor:
         self.range = range
         self.interval_ms = interval_ms
 
-    async def generate(self, mqtt_client: mqtt.Client, topic: str):
+    async def generate(self, mqtt_client: mqtt.Client, topic: str, insert_callback):
         while True:
             data = {
                 "id": self.id,
@@ -25,4 +25,7 @@ class Sensor:
             logging.info(f"{topic}: {payload}")
 
             mqtt_client.publish(topic, payload)
+            # insert data into mongoDB
+            insert_callback(data)
+
             await asyncio.sleep(self.interval_ms / 1000)
